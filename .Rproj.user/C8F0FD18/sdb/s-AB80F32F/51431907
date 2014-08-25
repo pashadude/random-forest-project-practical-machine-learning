@@ -1,0 +1,16 @@
+{
+    "contents" : "library(cluster)\nlibrary(psych)\ndata1 <- read.csv(\"/home/proveyourskillz/Desktop/knn-static/userdata.csv\", header=T, row.names=1)\ndata.p <- as.matrix(data1)\nn <- ((dim(data.p)[1])/15)\nkdata <- na.omit(data.p) \nfit <- kmeans(kdata, n, iter.max=50, nstart=10)\naggregate(kdata, by=list(fit$cluster), FUN=mean)\nclust.out <- fit$cluster\nkclust <- as.matrix(clust.out)\nkclust.out <- cbind(kclust, data1)\nwrite.table(kclust.out, file=\"/home/proveyourskillz/Desktop/knn-static/kmeans_out.csv\", sep=\",\")\npar(ask=TRUE)\ndata.p2 <- prop.table(data.p,1)*100\nclusplot(data.p2, fit$cluster, shade=F, labels=2, lines=0, color=T, lty=4, main='Principal Components plot showing K-means clusters')\n",
+    "created" : 1408822414094.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1213518509",
+    "id" : "51431907",
+    "lastKnownWriteTime" : 1403042260,
+    "path" : "~/Desktop/knn-static/clustering.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

@@ -1,0 +1,16 @@
+{
+    "contents" : "install.packages(\"rattle\")\ninstall.packages(\"rpart.plot\")\ninstall.packages(\"ElemStatLearn\")\ninstall.packages(\"rpart.plot\")\n\nlibrary(caret)\nlibrary (kernlab)\nlibrary(ggplot2)\nlibrary(rattle)\nset.seed(3433)\n\ndataset <- read.csv(\"/home/proveyourskillz/Desktop/trees/userdatatree.csv\", header=T, row.names=1)\ninTrain<-createDataPartition(dataset$League,p=3/4)[[1]]\ntraining<-dataset[inTrain,]\ntesting<-dataset[-inTrain,]\nmodFit<-train(League~.,method=\"rpart\",data=training)\nprint(modFit$finalModel)\nfancyRpartPlot(modFit$finalModel)\npredict(modFit,newdata=testing)\n\nlibrary(ElemStatLearn)\nlibrary(Hmisc)\ndata(vowel.train)\ndata(vowel.test)\nvowel.train <- transform(vowel.train, y=factor(y))\nvowel.test <- transform(vowel.test, y=factor(y))\nset.seed(33833)\nmodFit <- train(y ~., data=vowel.train, method=\"rf\", importance=TRUE)\nprint(modFit)\nvim<-varImp(modFit$finalModel)\nvi = data.frame(var = 1:nrow(vim), imp = vim$Overall)\nvi[order(vi$imp),]\n\n\nlibrary(AppliedPredictiveModeling)\ndata(segmentationOriginal)\nlibrary(caret)\ntraining = subset(segmentationOriginal, Case == \"Train\")\ntesting = subset(segmentationOriginal, Case == \"Test\")\n\nset.seed(125)\nmodlFit<-train(Class~.,method=\"rpart\",data=training)\nrslt<- predict(modlFit, testing) \nprint(rslt)\nv1 <- training[100,]\nv1['PerimStatusCh1'] = 2;\nv1['FiberWidthCh1'] <- 8;\nv1['VarIntenCh4'] <- 100;\nv1['Case'] <- 'Train';\nv1['Cell'] <- 1;\npredict(modlFit, rbind(v1))\n\nkeep = c('Case', 'Class', 'Cell')\n#keep = c()\nsampleData = training[1:4,]\nsampleData[1,!(names(sampleData) %in% keep)] = rep(NA, length(names(sampleData))-length(keep))\nsampleData[1, c('TotalIntenCh2', 'FiberWidthCh1', 'PerimStatusCh1')] = c(23000, 10, 2)\nsampleData[2, c('TotalIntenCh2', 'FiberWidthCh1', 'VarIntenCh4')] = c(50000, 10, 100)\nsampleData[3, c('TotalIntenCh2', 'FiberWidthCh1', 'VarIntenCh4')] = c(57000, 8, 100)\nsampleData[4, c('FiberWidthCh1', 'VarIntenCh4', 'PerimStatusCh1')] = c(8, 100, 2)\npred0<-predict(modlFit, sampleData[1,], verbose = TRUE)\npred1<-predict(modlFit, sampleData[2,], verbose = TRUE)\npred2<-predict(modlFit, sampleData[3,], verbose = TRUE)\npred3<-predict(modlFit, sampleData[4,], verbose = TRUE)\npred0\npred1\npred2\npred3\ninstall.packages(\"pgmm\")\nlibrary(pgmm)\ndata(olive)\nolive = olive[,-1]\n\ninstall.packages(\"tree\")\nlibrary(tree)\ntree1 = tree(Area ~ ., data=olive)\nplot(tree1)\ntext(tree1)\n\nnewdata = as.data.frame(t(colMeans(olive)))\npred1 <- predict(tree1,newdata)\npred1\n",
+    "created" : 1408925639842.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3883861326",
+    "id" : "5AE95B8",
+    "lastKnownWriteTime" : 1408670028,
+    "path" : "~/Desktop/trees/trees.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

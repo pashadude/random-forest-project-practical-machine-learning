@@ -1,0 +1,141 @@
+---
+title: "ml-excersize-rf-repeatedcv"
+output: html_document
+---
+
+#Installing the libraries and  setting the seed
+```{r}
+library(caret)
+library(psych)
+library(ggplot2)
+library(descr)
+library(randomForest)
+library(corrplot)
+set.seed(3433)
+
+```
+
+#lets load the data
+```{r}
+training_data <- read.csv("pml-training.csv", header=T, row.names=1)
+testing_data <- read.csv("pml-testing.csv", header=T, row.names=1)
+```
+
+#lets look into the data
+```{r}
+summary(training_data)
+describe(training_data)
+sapply(training_data, class)
+```
+
+#a lot of columns contain large share of blank data and #DIV/0!, lets turn em into NA
+```{r}
+
+training_data <- read.csv("pml-training.csv", header=T, row.names=1, na.strings = c("NA", "","#DIV/0!"))
+testing_data <- read.csv("pml-testing.csv", header=T, row.names=1, na.strings = c("NA", "","#DIV/0!"))
+```
+
+#lets get rid of columns with NA's (NA's form ~ 98% of values in columns where they occure)
+```{r}
+training_data <-training_data[,colSums(is.na(training_data)) == 0] 
+testing_data <-testing_data[,colSums(is.na(testing_data)) == 0] 
+```
+
+#lets remove analysis-meaningless columns like timestamp, username, window etc.
+```{r}
+training_data <- training_data[-(1:6)]
+testing_data <- testing_data[-(1:6)]
+```
+
+#Now lets split the training dataset foe actual training and validation purposess
+```{r}
+inTrain<-createDataPartition(training_data$classe, p=3/4, list=FALSE)
+training<-training_data[inTrain,]
+validating<-training_data[-inTrain,]
+```
+
+#Now I will check the correlation among the variables
+```{r}
+CorMx<-abs(cor(training[,-53]))
+corrplot(CorMx, method = "color", tl.cex = 0.8)
+```
+
+
+#the graph shows strong corr, specifically among in belt, accel_arm/magnet_arm,gyros and dumbbell variables groups
+#lets move to random forest (which takes pca analysis and repeated cross-validation
+
+```{r}
+preProc <- preProcess(training[, -53], method = "pca", thresh = 0.99)
+trainingPC <- predict(preProc, training[, -53])
+validatingPC <- predict(preProc, validating[,-53])
+
+modelFit <- train(training$classe ~ ., 
+                  method = "rf", 
+                  data = trainingPC,
+                  trControl = trainControl(method = "repeatedcv", number=5, repeats=5))
+```
+
+
+                  
+#cross valdation results show pretty high accuracy ~ 0.98, whle sensitivity and specificity is also rather good, 
+#lowest sensitivity is for class C, still it is 0.94 which is pretty high
+
+```{r}
+C1 <- confusionMatrix(validating$classe, predict(modelFit, validatingPC))
+print(C1)
+```
+
+
+#lets do pca on testing set and run model across the result
+
+```{r}
+testingPC <- predict(preProc, testing_data[, -53])
+stats<- predict(modelFit, testingPC) 
+```
+
+
+Confusion Matrix and Statistics
+
+          Reference
+Prediction    A    B    C    D    E
+         A 1392    2    1    0    0
+         B   15  923   10    1    0
+         C    2   10  837    6    0
+         D    1    0   30  767    6
+         E    0    4   10    7  880
+
+Overall Statistics
+                                          
+               Accuracy : 0.9786          
+                 95% CI : (0.9741, 0.9825)
+    No Information Rate : 0.2875          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.9729          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: A Class: B Class: C Class: D Class: E
+Sensitivity            0.9872   0.9830   0.9426   0.9821   0.9932
+Specificity            0.9991   0.9934   0.9955   0.9910   0.9948
+Pos Pred Value         0.9978   0.9726   0.9789   0.9540   0.9767
+Neg Pred Value         0.9949   0.9960   0.9874   0.9966   0.9985
+Prevalence             0.2875   0.1915   0.1811   0.1593   0.1807
+Detection Rate         0.2838   0.1882   0.1707   0.1564   0.1794
+Detection Prevalence   0.2845   0.1935   0.1743   0.1639   0.1837
+Balanced Accuracy      0.9932   0.9882   0.9690   0.9866   0.9940
+
+#lets write the results to files
+```{r}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(stats)
+```
+

@@ -1,0 +1,16 @@
+{
+    "contents" : "library (caret)\n\ninstall.packages(\"kernlab\")\ninstall.packages(\"descr\")\nlibrary (kernlab)\nlibrary(ggplot2)\ndata(spam)\ninTrain<-createDataPartition(y=spam$type,p=0.6,list=FALSE)\ntraining<-spam[inTrain,]\ntesting<-spam[-inTrain,]\ndim(training)\nfolds<-createFolds(y=spam$type,k=10,list=TRUE,returnTrain=TRUE)\nsapply(folds,length)\nmodelFit<-train(type~.,data=training,method=\"glm\")\nmodelFit\ninstall.packages(\"AppliedPredictiveModeling\")\n\n\nlibrary (AppliedPredictiveModeling)\ndata(concrete)\nset.seed(975)\ninTrain<-createDataPartition(mixtures$CompressiveStrength,p=3/4)[[1]]\ntraining<-mixtures[inTrain,]\ntesting<-mixtures[-inTrain,]\nqplot(CompressiveStrength,Age,data=training)\nSuperPlasticizerS<-(predict(training))$SuperPlasticizer\nhist(training$Superplasticizer)\nhead(training)\nSuperplasticizerS<-log10(mixtures$Superplasticizer)\nhist(SuperplasticizerS)\nlog(0)\nlibrary(descr)\nfreq(mixtures$Superplasticizer, plot = FALSE)\n\nlibrary (caret)\nlibrary (AppliedPredictiveModeling)\nset.seed(3433)\ndata(AlzheimerDisease)\nadData = data.frame(diagnosis,predictors)\ninTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]\ntraining = adData[ inTrain,]\ntesting = adData[-inTrain,]\ngrep(\"IL_\", colnames (training))\nIL_str <- grep(\"^IL\", colnames(training), value = TRUE)\npreproc<-preProcess(training[,IL_str],method=\"pca\",thresh = 0.9)\npreproc$rotation\n\npredictors_IL <- predictors[, IL_str]\ndf <- data.frame(diagnosis, predictors_IL)\ninTrain = createDataPartition(df$diagnosis, p = 3/4)[[1]]\ntraining = df[inTrain, ]\ntesting = df[-inTrain, ]\n\n## train the data using the first method\nmodelFit <- train(diagnosis ~ ., method = \"glm\", data = training)\npredictions <- predict(modelFit, newdata = testing)\n## get the confustion matrix for the first method\nC1 <- confusionMatrix(predictions, testing$diagnosis)\nprint(C1)\nA1 <- C1$overall[1]\n\n## do similar steps with the caret package\nmodelFit <- train(training$diagnosis ~ ., method = \"rf\", preProcess = \"pca\", \n                  data = training, trControl = trainControl(preProcOptions = list(thresh = 0.8)))\nC2 <- confusionMatrix(testing$diagnosis, predict(modelFit, testing))\nprint(C2)\nA2 <- C2$overall[1]\nprint(A1)\nprint(A2)\n",
+    "created" : 1408923781937.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1219780408",
+    "id" : "951D359B",
+    "lastKnownWriteTime" : 1408915919,
+    "path" : "~/Desktop/lr_gamertags.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1408996116352.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7D7271F6",
+    "lastKnownWriteTime" : 71751312,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "vim",
+        "contentUrl" : "content?title=vim&file=cfa97cd96de640f49736cc0fa4de6cf8.htm",
+        "displayedObservations" : 10,
+        "displayedVariables" : 12,
+        "totalObservations" : 10,
+        "variables" : 11
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}
